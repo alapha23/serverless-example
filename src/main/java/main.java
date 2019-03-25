@@ -1,5 +1,3 @@
-import java.beans.EventHandler;
-import org.apache.nemo.conf.EvalConf;
 import org.apache.nemo.offloading.common.ServerlessExecutorProvider;
 import org.apache.nemo.offloading.common.ServerlessExecutorService;
 
@@ -8,32 +6,30 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class main {
-    private ServerlessExecutorService serverlessExecutorService;
-    private final ConcurrentLinkedQueue<Object> offloadingEventQueue;
-    private final Collection<Pair<OperatorMetricCollector, OutputCollector>> burstyOperators;
+    private static ServerlessExecutorService serverlessExecutorService;
+    //
 
-    private final ExecutorService shutdownExecutor = Executors.newSingleThreadExecutor();
-    private final ServerlessExecutorProvider serverlessExecutorProvider;
-    private final SerializerManager serializerManager;
+    private static ServerlessExecutorProvider serverlessExecutorProvider;
 
-    private Map<String, List<String>> sourceAndSinkMap;
-
-//    private List<Pair<OperatorMetricCollector, OutputCollector>> offloadingHead;
-
-    private boolean isStarted = false;
-    private boolean finished = false;
-
-    private final ScheduledExecutorService flusher = Executors.newSingleThreadScheduledExecutor();
-    private final EvalConf evalConf;
+    private static ConcurrentLinkedQueue<Object> offloadingEventQueue;
 
 
     public static void main(String [] args){
 
         String str = "Hello World";
         System.out.println(str);
-//        OffloadingTransform offloadingTransform;
-//        OffloadingSerializer offloadingSerializer;
-//        EventHandler eventHandler;
-//        OffloadingSerializer<I, O> offloadingSerializer,
+
+        // make a serializerMap
+        // crete a cachedpoolserverlessExecutorService obj
+        // use newCachedPool to create the obj
+        serverlessExecutorService = serverlessExecutorProvider.
+                newCachedPool(new WordCountOffloadingTransform(str),
+                  new WordCountOffloadingSerializer(str),
+                  // output event handler
+                  new WordCountServerlessOffloadingEventHandler(offloadingEventQueue));
+        // we need event handler
+
+
+        // obj->execute creates a serverless worker
     }
 }
